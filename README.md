@@ -58,4 +58,4 @@ npm version patch   # or minor / major
 
 This runs the CI checks, bumps `package.json`, commits `chore(release): vX.Y.Z`, tags `vX.Y.Z`
 and pushes. The tag triggers the Release workflow, which publishes a GitHub release with
-generated notes.
+generated notes and pushes the Docker image to `ghcr.io/lumyx-dev/dashboard:X.Y.Z`.
