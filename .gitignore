@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# turbo
+.turbo
+
+# Agent skills and tooling — kept local, never versioned
+.agents/
+.claude/skills/
+.claude/settings.local.json
+.claude/worktrees/
+.kilocode/
+.gstack/
+.superpowers/
+skills-lock.json
+.rtk/

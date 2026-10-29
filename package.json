@@ -11,9 +11,9 @@
     "verify:ds": "node scripts/verify-ds.mjs"
   },
   "dependencies": {
-    "@lumyx/ui": "workspace:*",
-    "dotenv": "catalog:",
-    "zod": "catalog:",
+    "@lumyx/ui": "github:lumyx-dev/ui",
+    "dotenv": "17.2.2",
+    "zod": "4.1.13",
     "geist": "^1.3.1",
     "lucide-react": "^0.487.0",
     "next": "16.3.2",
@@ -30,7 +30,7 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "packageManager": "bun@1.2.21",
+  "packageManager": "bun@1.3.11",
   "ignoreScripts": [
     "sharp",
     "unrs-resolver"
@@ -38,5 +38,13 @@
   "trustedDependencies": [
     "sharp",
     "unrs-resolver"
-  ]
+  ],
+  "license": "AGPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lumyx-dev/dashboard.git"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
 }
