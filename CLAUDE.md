@@ -6,6 +6,7 @@ Self-hosted Lumyx dashboard (Next.js 16, AGPL-3.0-only).
 
 - Checks: `bun run lint`, `bun run check-types`, `bun run verify:ds`, `bun run build`.
 - Components and tokens come from `@lumyx/ui` (TS source, compiled via `transpilePackages`; Tailwind scans it through `@source` in `app/globals.css`).
+- Commits and PRs never mention Claude: no `Co-Authored-By: Claude` trailer, no "Generated with Claude Code" line, no reference to AI in messages or descriptions.
 
 <!-- rtk-instructions v2 -->
 # RTK (Rust Token Killer) - Token-Optimized Commands
