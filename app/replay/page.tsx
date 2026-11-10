@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Pause, Play } from 'lucide-react';
 import {
-  Card, CardTitle, Dot, InsetStat, PageBody, PageHeader, cn, linePath, toneBg, type Tone,
+  Card, CardTitle, Dot, InsetStat, PageBody, PageHeader, TimeSeriesChart, cn, toneBg, type Tone,
 } from '@lumyx/ui';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
 import {
@@ -210,19 +210,15 @@ function Replay() {
                 <div className="grid grid-cols-2 gap-2">
                   {stats.map((s) => <InsetStat key={s.k} label={s.k} value={s.v} tone={s.tone} size="lg" />)}
                 </div>
-                {/* Hand-drawn: the playhead is violet, and the card is too narrow for axis text. */}
-                <svg viewBox="0 0 400 80" preserveAspectRatio="none" className="block h-20 w-full" aria-hidden>
-                  <path d="M0 62 H400" stroke="var(--border-hover)" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
-                  <path
-                    d={linePath(lossCurve, 9, 400, 74)}
-                    transform="translate(0 4)"
-                    fill="none"
-                    stroke="var(--danger-solid)"
-                    strokeWidth="2"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                  <path d={`M${((t / se.len) * 400).toFixed(1)} 0 V80`} stroke="var(--accent)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
-                </svg>
+                <TimeSeriesChart
+                  height={120}
+                  max={9}
+                  yUnit="%"
+                  legend={false}
+                  series={[{ name: 'Packet loss', color: 'var(--danger-solid)', data: lossCurve }]}
+                  thresholds={[{ value: 2, color: 'var(--border-hover)' }]}
+                  playhead={t / se.len}
+                />
                 <span className="text-12 text-faint">Packet loss over the session. The violet line is the playhead.</span>
               </Card>
             </div>

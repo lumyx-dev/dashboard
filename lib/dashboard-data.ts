@@ -1,6 +1,6 @@
 /** Sample data for the self-hosted dashboard (Dashboard UI v3). Swap for the SFU's API later. */
 
-import { thresholdTone, type FeedEvent, type Tone } from '@lumyx/ui';
+import type { FeedEvent, Tone } from '@lumyx/ui';
 
 export const series = (n: number, seed: number, base: number, amp: number) =>
   Array.from({ length: n }, (_, i) =>
@@ -22,17 +22,6 @@ export const INSTANCE = {
 };
 
 export const TIME_LABELS = ['14:02', '14:17', '14:32', '14:47', '15:02'];
-
-// ── Tones ────────────────────────────────────────────────────────────────────
-
-/**
- * A metric cell's tone: v3 tables keep in-range values in plain ink and only colour a crossed
- * threshold, so `thresholdTone`'s `ok` reads as `neutral` here.
- */
-export const metricTone = (v: number, warn: number, danger: number): Tone => {
-  const t = thresholdTone(v, warn, danger);
-  return t === 'ok' ? 'neutral' : t;
-};
 
 // ── Rooms ────────────────────────────────────────────────────────────────────
 

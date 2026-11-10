@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import {
-  Badge, Button, Card, Dot, EmptyState, InsetStat, PageBody, PageHeader, SegmentedControl, areaPath, cn, linePath, toneVar,
+  Badge, Button, Card, Dot, EmptyState, InsetStat, PageBody, PageHeader, SegmentedControl, TimeSeriesChart, cn, toneVar,
   type Tone,
 } from '@lumyx/ui';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
@@ -41,9 +41,6 @@ export default function AlertsPage() {
   const tone = alertTone(ad);
   const color = toneVar[tone];
   const data = curve(ad);
-  // Hand-drawn: in a 440px card TimeSeriesChart's axis text gets squashed. 4% headroom over max.
-  const max = ad.max / 0.96;
-  const thY = (100 - Math.min(1, ad.t / ad.max) * 96).toFixed(1);
 
   return (
     <>
@@ -112,11 +109,14 @@ export default function AlertsPage() {
 
             <div>
               <span className="text-12 text-faint">{ad.metric} · last 10 min</span>
-              <svg viewBox="0 0 400 100" preserveAspectRatio="none" className="mt-2 block h-25 w-full" aria-hidden>
-                <path d={areaPath(data, max, 400, 100)} fill={color} fillOpacity="0.08" />
-                <path d={`M0 ${thY} H400`} stroke="var(--text-faint)" strokeDasharray="6 6" vectorEffect="non-scaling-stroke" />
-                <path d={linePath(data, max, 400, 100)} fill="none" stroke={color} strokeWidth="2" vectorEffect="non-scaling-stroke" />
-              </svg>
+              <TimeSeriesChart
+                className="mt-2"
+                height={140}
+                max={ad.max}
+                legend={false}
+                series={[{ name: ad.metric, color, data, area: true }]}
+                thresholds={[{ value: ad.t, color: 'var(--text-faint)' }]}
+              />
             </div>
 
             <div className="flex flex-col gap-1">

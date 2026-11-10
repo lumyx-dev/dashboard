@@ -7,10 +7,11 @@ import {
   Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EventFeed, InsetStat, MetricCard, PageBody,
   ScoreBar, SegmentedControl, StatusDot, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, areaPath, cn,
   linePath, scoreTone, toneText, toneVar, type Tone,
+  thresholdTone,
 } from '@lumyx/ui';
 import { useDashboard } from '@/components/dashboard-chrome';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
-import { GRAPH_POS, MATRIX, PEERS, ROOMS, ROOM_EVENTS, metricTone, shift } from '@/lib/dashboard-data';
+import { GRAPH_POS, MATRIX, PEERS, ROOMS, ROOM_EVENTS, shift } from '@/lib/dashboard-data';
 
 type Topo = 'graph' | 'matrix';
 
@@ -93,10 +94,10 @@ function RoomDetail() {
                         </span>
                       </TableCell>
                       <TableCell><ScoreBar score={p.score} /></TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.nack, 3, 5)]}`}>{p.nack.toFixed(1)}%</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.rtt, 150, 200, 'neutral')]}`}>{p.rtt}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.jitter, 20, 30, 'neutral')]}`}>{p.jitter}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.loss, 1, 2, 'neutral')]}`}>{p.loss.toFixed(2)}%</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.nack, 3, 5, 'neutral')]}`}>{p.nack.toFixed(1)}%</TableCell>
                       <TableCell><Badge tone="accent" shape="chip">{p.codec}</Badge></TableCell>
                     </TableRow>
                   ))}
@@ -228,10 +229,10 @@ function SelectedPeer({ index }: { index: number }) {
   const rtt = shift(p.series, tick % 6);
   const max = Math.max(...rtt) * 1.2;
   const stats: { k: string; v: string; tone: Tone }[] = [
-    { k: 'RTT', v: `${p.rtt} ms`, tone: metricTone(p.rtt, 150, 200) },
-    { k: 'Jitter', v: `${p.jitter} ms`, tone: metricTone(p.jitter, 20, 30) },
-    { k: 'Loss', v: `${p.loss.toFixed(2)}%`, tone: metricTone(p.loss, 1, 2) },
-    { k: 'NACK', v: `${p.nack.toFixed(1)}%`, tone: metricTone(p.nack, 3, 5) },
+    { k: 'RTT', v: `${p.rtt} ms`, tone: thresholdTone(p.rtt, 150, 200, 'neutral') },
+    { k: 'Jitter', v: `${p.jitter} ms`, tone: thresholdTone(p.jitter, 20, 30, 'neutral') },
+    { k: 'Loss', v: `${p.loss.toFixed(2)}%`, tone: thresholdTone(p.loss, 1, 2, 'neutral') },
+    { k: 'NACK', v: `${p.nack.toFixed(1)}%`, tone: thresholdTone(p.nack, 3, 5, 'neutral') },
   ];
 
   return (

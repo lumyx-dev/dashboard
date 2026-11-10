@@ -7,10 +7,11 @@ import {
   AlertBanner, Button, Card, CardHeader, CardTitle, CardDescription, CardContent, ChartLegend, Dot, EventFeed,
   MeterRow, MetricCard, MetricGrid, PageBody, PageHeader, Progress, ScoreBar, Sparkline, StatusDot, Table,
   TableBody, TableCell, TableHead, TableHeader, TableRow, TimeSeriesChart, scoreTone, toneText, toneVar,
+  thresholdTone,
 } from '@lumyx/ui';
 import { useDashboard } from '@/components/dashboard-chrome';
 import { DashboardTopBar, RANGE_LABEL } from '@/components/dashboard-top-bar';
-import { EVENTS, FLEET_PEERS, ROOMS, TIME_LABELS, metricTone, series, shift } from '@/lib/dashboard-data';
+import { EVENTS, FLEET_PEERS, ROOMS, TIME_LABELS, series, shift } from '@/lib/dashboard-data';
 
 const BW_MAX = 16;
 
@@ -124,9 +125,9 @@ export default function OverviewPage() {
                       </TableCell>
                       <TableCell className="text-muted">{p.room}</TableCell>
                       <TableCell><ScoreBar score={p.score} /></TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.rtt, 150, 200, 'neutral')]}`}>{p.rtt}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.jitter, 20, 30, 'neutral')]}`}>{p.jitter}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.loss, 1, 2, 'neutral')]}`}>{p.loss.toFixed(2)}%</TableCell>
                       <TableCell>
                         <Sparkline data={p.series} width={72} height={24} fill={false} color={toneVar[scoreTone(p.score)]} />
                       </TableCell>

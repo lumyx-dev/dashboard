@@ -6,9 +6,10 @@ import {
   Badge, Card, CardContent, CardHeader, CardTitle, EmptyState, MeterRow, MetricCard, MetricGrid, PageBody, PageHeader,
   ScoreBar, SearchField, SegmentedControl, Sparkline, StatusDot, Table, TableBody, TableCell, TableHead, TableHeader,
   TableRow, cn, scoreTone, toneBg, toneText, toneVar,
+  thresholdTone,
 } from '@lumyx/ui';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
-import { ALL_PEERS, metricTone, type IcePath } from '@/lib/dashboard-data';
+import { ALL_PEERS, type IcePath } from '@/lib/dashboard-data';
 
 type Filter = 'all' | 'degraded' | 'live';
 
@@ -102,9 +103,9 @@ export default function PeersPage() {
                       </TableCell>
                       <TableCell className="sl-num text-13 text-muted">{p.room}</TableCell>
                       <TableCell><ScoreBar score={p.score} /></TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
-                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.rtt, 150, 200, 'neutral')]}`}>{p.rtt}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.jitter, 20, 30, 'neutral')]}`}>{p.jitter}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[thresholdTone(p.loss, 1, 2, 'neutral')]}`}>{p.loss.toFixed(2)}%</TableCell>
                       <TableCell>
                         <Badge shape="chip" tone={p.path === 'relay' ? 'danger' : 'neutral'}>{p.path}</Badge>
                       </TableCell>
