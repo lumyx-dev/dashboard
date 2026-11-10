@@ -3,12 +3,12 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Badge, Card, CardContent, CardHeader, CardTitle, EmptyState, MetricCard, MetricGrid, PageBody, PageHeader,
-  SegmentedControl, Sparkline, StatusDot, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, cn,
+  Badge, Card, CardContent, CardHeader, CardTitle, EmptyState, MeterRow, MetricCard, MetricGrid, PageBody, PageHeader,
+  ScoreBar, SearchField, SegmentedControl, Sparkline, StatusDot, Table, TableBody, TableCell, TableHead, TableHeader,
+  TableRow, cn, scoreTone, toneBg, toneText, toneVar,
 } from '@lumyx/ui';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
-import { MeterRow, ScoreBar, SearchField, TONE_BG, TONE_TEXT, TONE_VAR } from '@/components/dashboard-parts';
-import { ALL_PEERS, scoreTone, sev, type IcePath } from '@/lib/dashboard-data';
+import { ALL_PEERS, metricTone, type IcePath } from '@/lib/dashboard-data';
 
 type Filter = 'all' | 'degraded' | 'live';
 
@@ -19,16 +19,16 @@ const FILTERS: { value: Filter; label: string }[] = [
 ];
 
 const BUCKETS: { lo: number; hi: number; label: string; bar: string }[] = [
-  { lo: 0, hi: 50, label: '0–49', bar: TONE_BG.danger },
-  { lo: 50, hi: 70, label: '50–69', bar: TONE_BG.warn },
-  { lo: 70, hi: 85, label: '70–84', bar: 'bg-[var(--indigo-300)]' },
-  { lo: 85, hi: 101, label: '85+', bar: TONE_BG.ok },
+  { lo: 0, hi: 50, label: '0–49', bar: toneBg.danger },
+  { lo: 50, hi: 70, label: '50–69', bar: toneBg.warn },
+  { lo: 70, hi: 85, label: '70–84', bar: 'bg-accent-muted' },
+  { lo: 85, hi: 101, label: '85+', bar: toneBg.ok },
 ];
 
 const PATHS: { key: IcePath; label: string; bar: string }[] = [
-  { key: 'host', label: 'Direct (host)', bar: TONE_BG.ok },
-  { key: 'srflx', label: 'Through NAT (srflx)', bar: 'bg-[var(--indigo-300)]' },
-  { key: 'relay', label: 'TURN relay', bar: TONE_BG.danger },
+  { key: 'host', label: 'Direct (host)', bar: toneBg.ok },
+  { key: 'srflx', label: 'Through NAT (srflx)', bar: 'bg-accent-muted' },
+  { key: 'relay', label: 'TURN relay', bar: toneBg.danger },
 ];
 
 const inBucket = (score: number, b: (typeof BUCKETS)[number]) => score >= b.lo && score < b.hi;
@@ -56,7 +56,7 @@ export default function PeersPage() {
           actions={
             <>
               <SegmentedControl aria-label="Filter peers" options={FILTERS} value={filter} onValueChange={setFilter} />
-              <SearchField value={q} onChange={setQ} placeholder="Search peer or room" label="Search peers" />
+              <SearchField value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search peer or room" aria-label="Search peers" />
             </>
           }
         />
@@ -102,14 +102,14 @@ export default function PeersPage() {
                       </TableCell>
                       <TableCell className="sl-num text-13 text-muted">{p.room}</TableCell>
                       <TableCell><ScoreBar score={p.score} /></TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
                       <TableCell>
                         <Badge shape="chip" tone={p.path === 'relay' ? 'danger' : 'neutral'}>{p.path}</Badge>
                       </TableCell>
                       <TableCell>
-                        <Sparkline data={p.series} width={72} height={24} fill={false} color={TONE_VAR[scoreTone(p.score)]} />
+                        <Sparkline data={p.series} width={72} height={24} fill={false} color={toneVar[scoreTone(p.score)]} />
                       </TableCell>
                     </TableRow>
                   ))}

@@ -3,10 +3,12 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
-import { Badge, Button, Card, EmptyState, PageBody, PageHeader, SegmentedControl, cn } from '@lumyx/ui';
+import {
+  Badge, Button, Card, Dot, EmptyState, InsetStat, PageBody, PageHeader, SegmentedControl, areaPath, cn, linePath, toneVar,
+  type Tone,
+} from '@lumyx/ui';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
-import { Dot, InsetStat, TONE_VAR, areaPath, linePath } from '@/components/dashboard-parts';
-import { ALERTS, type AlertRow, type Tone } from '@/lib/dashboard-data';
+import { ALERTS, type AlertRow } from '@/lib/dashboard-data';
 
 type Tab = 'open' | 'resolved';
 
@@ -37,11 +39,11 @@ export default function AlertsPage() {
   const list = ALERTS.filter((a) => (tab === 'open' ? a.open : !a.open));
   const ad = list.find((a) => a.id === selected) ?? list[0] ?? ALERTS[0];
   const tone = alertTone(ad);
-  const color = TONE_VAR[tone];
+  const color = toneVar[tone];
   const data = curve(ad);
-  // The chart keeps 4% headroom over the metric's max, as the design does.
+  // Hand-drawn: in a 440px card TimeSeriesChart's axis text gets squashed. 4% headroom over max.
   const max = ad.max / 0.96;
-  const thY = (100 - (Math.min(1, ad.t / ad.max) * 96)).toFixed(1);
+  const thY = (100 - Math.min(1, ad.t / ad.max) * 96).toFixed(1);
 
   return (
     <>

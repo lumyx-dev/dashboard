@@ -4,17 +4,13 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
-  Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, MetricCard, PageBody,
-  SegmentedControl, StatusDot, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, cn,
+  Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EventFeed, InsetStat, MetricCard, PageBody,
+  ScoreBar, SegmentedControl, StatusDot, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, areaPath, cn,
+  linePath, scoreTone, toneText, toneVar, type Tone,
 } from '@lumyx/ui';
 import { useDashboard } from '@/components/dashboard-chrome';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
-import {
-  EventFeed, InsetStat, ScoreBar, TONE_TEXT, TONE_VAR, areaPath, linePath,
-} from '@/components/dashboard-parts';
-import {
-  GRAPH_POS, MATRIX, PEERS, ROOMS, ROOM_EVENTS, scoreTone, sev, shift, type Tone,
-} from '@/lib/dashboard-data';
+import { GRAPH_POS, MATRIX, PEERS, ROOMS, ROOM_EVENTS, metricTone, shift } from '@/lib/dashboard-data';
 
 type Topo = 'graph' | 'matrix';
 
@@ -97,10 +93,10 @@ function RoomDetail() {
                         </span>
                       </TableCell>
                       <TableCell><ScoreBar score={p.score} /></TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.nack, 3, 5)]}`}>{p.nack.toFixed(1)}%</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.nack, 3, 5)]}`}>{p.nack.toFixed(1)}%</TableCell>
                       <TableCell><Badge tone="accent" shape="chip">{p.codec}</Badge></TableCell>
                     </TableRow>
                   ))}
@@ -159,7 +155,7 @@ function TopologyGraph({ selected, onSelect }: { selected: number; onSelect: (i:
       </span>
       {PEERS.map((p, i) => {
         const [x, y] = GRAPH_POS[i];
-        const ring = TONE_VAR[scoreTone(p.score)];
+        const ring = toneVar[scoreTone(p.score)];
         return (
           <button
             key={p.peer_id}
@@ -179,7 +175,7 @@ function TopologyGraph({ selected, onSelect }: { selected: number; onSelect: (i:
             >
               <span className="size-2 rounded-pill" style={{ background: ring }} />
             </span>
-            <span className="sl-num rounded-[4px] bg-card px-1 text-12 text-body">{p.peer_id}</span>
+            <span className="sl-num rounded-2xs bg-card px-1 text-12 text-body">{p.peer_id}</span>
           </button>
         );
       })}
@@ -228,14 +224,14 @@ function SelectedPeer({ index }: { index: number }) {
   const { tick } = useDashboard();
   const p = PEERS[index] ?? PEERS[0];
   const tone = scoreTone(p.score);
-  const color = TONE_VAR[tone];
+  const color = toneVar[tone];
   const rtt = shift(p.series, tick % 6);
   const max = Math.max(...rtt) * 1.2;
   const stats: { k: string; v: string; tone: Tone }[] = [
-    { k: 'RTT', v: `${p.rtt} ms`, tone: sev(p.rtt, 150, 200) },
-    { k: 'Jitter', v: `${p.jitter} ms`, tone: sev(p.jitter, 20, 30) },
-    { k: 'Loss', v: `${p.loss.toFixed(2)}%`, tone: sev(p.loss, 1, 2) },
-    { k: 'NACK', v: `${p.nack.toFixed(1)}%`, tone: sev(p.nack, 3, 5) },
+    { k: 'RTT', v: `${p.rtt} ms`, tone: metricTone(p.rtt, 150, 200) },
+    { k: 'Jitter', v: `${p.jitter} ms`, tone: metricTone(p.jitter, 20, 30) },
+    { k: 'Loss', v: `${p.loss.toFixed(2)}%`, tone: metricTone(p.loss, 1, 2) },
+    { k: 'NACK', v: `${p.nack.toFixed(1)}%`, tone: metricTone(p.nack, 3, 5) },
   ];
 
   return (
@@ -250,7 +246,7 @@ function SelectedPeer({ index }: { index: number }) {
               transform="rotate(-90 28 28)"
             />
           </svg>
-          <span className={cn('sl-num absolute inset-0 flex items-center justify-center text-16 font-semibold', TONE_TEXT[tone])}>
+          <span className={cn('sl-num absolute inset-0 flex items-center justify-center text-16 font-semibold', toneText[tone])}>
             {p.score}
           </span>
         </span>

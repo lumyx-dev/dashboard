@@ -3,11 +3,12 @@
 import * as React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Pause, Play } from 'lucide-react';
-import { Card, CardTitle, PageBody, PageHeader, cn } from '@lumyx/ui';
-import { DashboardTopBar } from '@/components/dashboard-top-bar';
-import { Dot, InsetStat, TONE_BG, linePath } from '@/components/dashboard-parts';
 import {
-  REPLAY_EVENTS, REPLAY_PEERS, SESSIONS, clock, replayLossAt, type Tone,
+  Card, CardTitle, Dot, InsetStat, PageBody, PageHeader, cn, linePath, toneBg, type Tone,
+} from '@lumyx/ui';
+import { DashboardTopBar } from '@/components/dashboard-top-bar';
+import {
+  REPLAY_EVENTS, REPLAY_PEERS, SESSIONS, clock, replayLossAt,
 } from '@/lib/dashboard-data';
 
 function Replay() {
@@ -166,7 +167,7 @@ function Replay() {
                     <span
                       key={e.at}
                       title={e.label}
-                      className={cn('absolute top-2.5 -ml-0.5 h-5 w-1 rounded-[2px]', TONE_BG[e.tone])}
+                      className={cn('absolute top-2.5 -ml-0.5 h-5 w-1 rounded-2xs', toneBg[e.tone])}
                       style={{ left: `${(e.at / se.len) * 100}%` }}
                     />
                   ))}
@@ -209,9 +210,9 @@ function Replay() {
                 <div className="grid grid-cols-2 gap-2">
                   {stats.map((s) => <InsetStat key={s.k} label={s.k} value={s.v} tone={s.tone} size="lg" />)}
                 </div>
+                {/* Hand-drawn: the playhead is violet, and the card is too narrow for axis text. */}
                 <svg viewBox="0 0 400 80" preserveAspectRatio="none" className="block h-20 w-full" aria-hidden>
                   <path d="M0 62 H400" stroke="var(--border-hover)" strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />
-                  {/* 9% loss fills 74 of the 80px box, leaving 2px under and 4px over. */}
                   <path
                     d={linePath(lossCurve, 9, 400, 74)}
                     transform="translate(0 4)"

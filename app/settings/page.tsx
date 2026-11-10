@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Card, Input, PageBody, PageHeader, SegmentedControl, Switch, cn } from '@lumyx/ui';
+import { Button, Card, Input, PageBody, PageHeader, SegmentedControl, Switch, UnitInput, cn } from '@lumyx/ui';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
 import { DEFAULT_CONFIG, THRESHOLD_FIELDS, type Config } from '@/lib/dashboard-data';
 
@@ -76,23 +76,13 @@ export default function SettingsPage() {
                   {f.label}
                   <span className="sl-num text-12 font-normal text-faint">{f.key}</span>
                 </span>
-                <span className="flex">
-                  <Input
-                    className="sl-num rounded-r-none"
-                    inputMode="decimal"
-                    value={f.raw}
-                    aria-invalid={!f.ok}
-                    onChange={(e) => edit({ th: { ...cfg.th, [f.key]: e.target.value } })}
-                  />
-                  <span
-                    className={cn(
-                      'flex items-center rounded-r-sm border border-l-0 bg-sunken px-3 text-14 text-faint',
-                      f.ok ? 'border-stroke' : 'border-danger',
-                    )}
-                  >
-                    {f.unit}
-                  </span>
-                </span>
+                <UnitInput
+                  unit={f.unit}
+                  inputMode="decimal"
+                  value={f.raw}
+                  aria-invalid={!f.ok}
+                  onChange={(e) => edit({ th: { ...cfg.th, [f.key]: e.target.value } })}
+                />
                 <span className={cn('text-12', f.ok ? 'text-faint' : 'text-danger')}>
                   {!f.ok
                     ? `Enter a number between ${f.lo} and ${f.hi}.`
@@ -149,7 +139,7 @@ export default function SettingsPage() {
               <>
                 <Button
                   variant="ghost"
-                  className="border-[var(--n-600)] text-card hover:bg-transparent hover:text-card hover:opacity-80"
+                  className="border-on-ink-border text-card hover:bg-transparent hover:text-card hover:opacity-80"
                   onClick={() => {
                     setCfg(saved);
                     setJustSaved(false);

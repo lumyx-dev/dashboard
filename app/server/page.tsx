@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import {
-  Button, Card, CardContent, CardDescription, CardHeader, CardTitle, CodeBlock, MetricGrid, PageBody, PageHeader,
-  Progress, cn,
+  Button, Card, CardContent, CardDescription, CardHeader, CardTitle, CodeBlock, MetricCard, MetricGrid, PageBody,
+  PageHeader, cn,
 } from '@lumyx/ui';
 import { useDashboard } from '@/components/dashboard-chrome';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
@@ -38,15 +38,14 @@ export default function ServerPage() {
 
         <MetricGrid columns={4} className="grid-cols-2">
           {host.map((k) => (
-            <Card key={k.label} className="flex flex-col gap-2 p-4">
-              <span className="text-12 text-muted">{k.label}</span>
-              <span className="flex items-baseline gap-1">
-                <span className="sl-num text-24 font-semibold tracking-[-0.02em] text-strong">{k.value}</span>
-                <span className="text-14 text-faint">{k.unit}</span>
-              </span>
-              <Progress value={k.pct} className="h-1.5" indicatorClassName={k.warn ? 'bg-warn-solid' : undefined} />
-              <span className="text-12 text-faint">{k.sub}</span>
-            </Card>
+            <MetricCard
+              key={k.label}
+              label={k.label}
+              value={k.value}
+              unit={k.unit}
+              sub={k.sub}
+              progress={{ value: k.pct, indicatorClassName: k.warn ? 'bg-warn-solid' : undefined }}
+            />
           ))}
         </MetricGrid>
 
@@ -60,7 +59,7 @@ export default function ServerPage() {
                     <span
                       className={cn(
                         'w-full transition-[height] duration-600 ease-[var(--ease-out)]',
-                        v > 70 ? 'bg-warn-solid' : 'bg-[var(--indigo-300)]',
+                        v > 70 ? 'bg-warn-solid' : 'bg-accent-muted',
                       )}
                       style={{ height: `${v.toFixed(0)}%` }}
                     />
@@ -93,7 +92,7 @@ export default function ServerPage() {
           <CardContent>
             <CodeBlock className="leading-5">
               {tomlLines(DEFAULT_CONFIG).map((line, i) => (
-                <div key={i} className={cn('min-h-5 whitespace-pre', line.startsWith('[') && 'text-accent-soft')}>
+                <div key={i} className={cn('min-h-5 whitespace-pre', line.startsWith('[') && 'text-on-ink-accent')}>
                   {line || ' '}
                 </div>
               ))}

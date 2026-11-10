@@ -1,5 +1,7 @@
 /** Sample data for the self-hosted dashboard (Dashboard UI v3). Swap for the SFU's API later. */
 
+import { thresholdTone, type FeedEvent, type Tone } from '@lumyx/ui';
+
 export const series = (n: number, seed: number, base: number, amp: number) =>
   Array.from({ length: n }, (_, i) =>
     Math.max(0, base + amp * Math.sin(i / 2.6 + seed) + amp * 0.45 * Math.sin(i / 7.3 + seed * 2)),
@@ -23,13 +25,14 @@ export const TIME_LABELS = ['14:02', '14:17', '14:32', '14:47', '15:02'];
 
 // ── Tones ────────────────────────────────────────────────────────────────────
 
-export type Tone = 'ok' | 'warn' | 'danger' | 'accent' | 'idle' | 'neutral';
-
-/** Past `warn` is a warning, past `danger` a breach; under both stays neutral. */
-export const sev = (v: number, warn: number, danger: number): Tone =>
-  v > danger ? 'danger' : v > warn ? 'warn' : 'neutral';
-
-export const scoreTone = (score: number): Tone => (score < 50 ? 'danger' : score < 80 ? 'warn' : 'ok');
+/**
+ * A metric cell's tone: v3 tables keep in-range values in plain ink and only colour a crossed
+ * threshold, so `thresholdTone`'s `ok` reads as `neutral` here.
+ */
+export const metricTone = (v: number, warn: number, danger: number): Tone => {
+  const t = thresholdTone(v, warn, danger);
+  return t === 'ok' ? 'neutral' : t;
+};
 
 // ── Rooms ────────────────────────────────────────────────────────────────────
 
@@ -87,8 +90,6 @@ export const ALL_PEERS: PeerRow[] = [
 ];
 
 // ── Events ───────────────────────────────────────────────────────────────────
-
-export type FeedEvent = { time: string; message: string; detail: string; tone: Tone };
 
 export const EVENTS: FeedEvent[] = [
   { time: '14:06:41', message: 'Packet loss above threshold', detail: 'ff104b2c · 7.90% vs 2%', tone: 'danger' },

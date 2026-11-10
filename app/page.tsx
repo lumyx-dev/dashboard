@@ -4,16 +4,13 @@ import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  AlertBanner, Button, Card, CardHeader, CardTitle, CardDescription, CardContent, MetricCard, MetricGrid,
-  PageBody, PageHeader, Progress, Sparkline, StatusDot, Table, TableBody, TableCell, TableHead,
-  TableHeader, TableRow,
+  AlertBanner, Button, Card, CardHeader, CardTitle, CardDescription, CardContent, ChartLegend, Dot, EventFeed,
+  MeterRow, MetricCard, MetricGrid, PageBody, PageHeader, Progress, ScoreBar, Sparkline, StatusDot, Table,
+  TableBody, TableCell, TableHead, TableHeader, TableRow, TimeSeriesChart, scoreTone, toneText, toneVar,
 } from '@lumyx/ui';
 import { useDashboard } from '@/components/dashboard-chrome';
 import { DashboardTopBar, RANGE_LABEL } from '@/components/dashboard-top-bar';
-import {
-  Dot, EventFeed, LegendItem, MeterRow, ScoreBar, TONE_TEXT, TONE_VAR, TimeAxis, areaPath, linePath,
-} from '@/components/dashboard-parts';
-import { EVENTS, FLEET_PEERS, ROOMS, TIME_LABELS, scoreTone, series, sev, shift } from '@/lib/dashboard-data';
+import { EVENTS, FLEET_PEERS, ROOMS, TIME_LABELS, metricTone, series, shift } from '@/lib/dashboard-data';
 
 const BW_MAX = 16;
 
@@ -69,20 +66,25 @@ export default function OverviewPage() {
               <CardHeader>
                 <CardTitle>Bandwidth</CardTitle>
                 <span className="flex-1" />
-                <LegendItem color="var(--series-1)" label="Outbound" />
-                <LegendItem color="var(--series-2)" label="Inbound" />
+                <ChartLegend
+                  items={[
+                    { name: 'Outbound', color: 'var(--series-1)' },
+                    { name: 'Inbound', color: 'var(--series-2)' },
+                  ]}
+                />
               </CardHeader>
               <CardContent>
-                <div className="relative h-50">
-                  <svg viewBox="0 0 600 200" preserveAspectRatio="none" className="absolute inset-0 size-full" aria-label="Bandwidth, last hour" role="img">
-                    <path d="M0 50H600M0 100H600M0 150H600" stroke="var(--border-subtle)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                    <path d={areaPath(bwOut, BW_MAX, 600, 200)} fill="var(--series-1)" fillOpacity="0.08" />
-                    <path d={linePath(bwOut, BW_MAX, 600, 200)} fill="none" stroke="var(--series-1)" strokeWidth="2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-                    <path d={linePath(bwIn, BW_MAX, 600, 200)} fill="none" stroke="var(--series-2)" strokeWidth="2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-                  </svg>
-                  <span className="sl-num absolute top-0 left-0 text-12 text-faint">16 Mbps</span>
-                </div>
-                <TimeAxis labels={TIME_LABELS} />
+                <TimeSeriesChart
+                  height={220}
+                  max={BW_MAX}
+                  yUnit=" Mbps"
+                  xLabels={TIME_LABELS}
+                  legend={false}
+                  series={[
+                    { name: 'Outbound', color: 'var(--series-1)', data: bwOut, area: true },
+                    { name: 'Inbound', color: 'var(--series-2)', data: bwIn },
+                  ]}
+                />
               </CardContent>
             </Card>
 
@@ -122,11 +124,11 @@ export default function OverviewPage() {
                       </TableCell>
                       <TableCell className="text-muted">{p.room}</TableCell>
                       <TableCell><ScoreBar score={p.score} /></TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
-                      <TableCell className={`sl-num text-right ${TONE_TEXT[sev(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.rtt, 150, 200)]}`}>{p.rtt}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.jitter, 20, 30)]}`}>{p.jitter}</TableCell>
+                      <TableCell className={`sl-num text-right ${toneText[metricTone(p.loss, 1, 2)]}`}>{p.loss.toFixed(2)}%</TableCell>
                       <TableCell>
-                        <Sparkline data={p.series} width={72} height={24} fill={false} color={TONE_VAR[scoreTone(p.score)]} />
+                        <Sparkline data={p.series} width={72} height={24} fill={false} color={toneVar[scoreTone(p.score)]} />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -153,7 +155,7 @@ export default function OverviewPage() {
                       <Dot tone={tone} />
                       <span className="sl-num">{r.id}</span>
                     </span>
-                    <Sparkline data={shift(r.series, tick % 6)} width={72} height={20} fill={false} color={TONE_VAR[tone]} />
+                    <Sparkline data={shift(r.series, tick % 6)} width={72} height={20} fill={false} color={toneVar[tone]} />
                     <span className="text-12 text-faint">{r.peers} peers · {r.uptime} · {r.region}</span>
                     <span className="sl-num text-right text-12 text-muted">{r.bitrate}</span>
                   </Link>

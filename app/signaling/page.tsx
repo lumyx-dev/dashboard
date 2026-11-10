@@ -68,7 +68,7 @@ export default function SignalingPage() {
               {bars.map((v, i) => (
                 <span
                   key={i}
-                  className={cn('flex-1 rounded-[2px]', v > 80 ? 'bg-accent2' : 'bg-accent-soft')}
+                  className={cn('flex-1 rounded-2xs', v > 80 ? 'bg-accent2' : 'bg-accent-soft')}
                   style={{ height: `${((v / 112) * 100).toFixed(0)}%` }}
                 />
               ))}

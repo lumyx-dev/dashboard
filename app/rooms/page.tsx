@@ -3,11 +3,10 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Badge, Card, EmptyState, PageBody, PageHeader, SegmentedControl, Sparkline, Table, TableBody, TableCell,
-  TableHead, TableHeader, TableRow,
+  Badge, Card, Dot, EmptyState, PageBody, PageHeader, SearchField, SegmentedControl, Sparkline, Table, TableBody,
+  TableCell, TableHead, TableHeader, TableRow, toneVar,
 } from '@lumyx/ui';
 import { DashboardTopBar } from '@/components/dashboard-top-bar';
-import { Dot, SearchField, TONE_VAR } from '@/components/dashboard-parts';
 import { ROOMS } from '@/lib/dashboard-data';
 
 type Filter = 'active' | 'ended' | 'all';
@@ -36,7 +35,7 @@ export default function RoomsPage() {
           actions={
             <>
               <SegmentedControl aria-label="Filter rooms" options={FILTERS} value={filter} onValueChange={setFilter} />
-              <SearchField value={q} onChange={setQ} placeholder="Search by room_id" label="Search rooms" />
+              <SearchField value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by room_id" aria-label="Search rooms" />
             </>
           }
         />
@@ -73,7 +72,7 @@ export default function RoomsPage() {
                       <TableCell className="sl-num py-4 text-right text-muted">{r.data}</TableCell>
                       <TableCell className="py-4"><Badge shape="chip">{r.region}</Badge></TableCell>
                       <TableCell className="py-4">
-                        <Sparkline data={r.series} width={72} height={20} fill={false} color={TONE_VAR[tone]} />
+                        <Sparkline data={r.series} width={72} height={20} fill={false} color={toneVar[tone]} />
                       </TableCell>
                       <TableCell className="py-4">
                         <Badge tone={r.state === 'active' ? 'ok' : 'neutral'}>{r.state === 'active' ? 'Active' : 'Ended'}</Badge>
