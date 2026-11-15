@@ -1,0 +1,9 @@
+node_modules/
+.next/
+.git/
+.github/
+docs/
+*.tsbuildinfo
+.env
+.env.*
+*.pem

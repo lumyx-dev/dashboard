@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "check-types": "tsc --noEmit",
-    "verify:ds": "node scripts/verify-ds.mjs"
+    "verify:ds": "node scripts/verify-ds.mjs",
+    "preversion": "test \"$(git branch --show-current)\" = main && git fetch -q origin main && test \"$(git rev-parse HEAD)\" = \"$(git rev-parse origin/main)\" && bun run lint && bun run check-types && bun run verify:ds && bun run build",
+    "postversion": "git push --follow-tags"
   },
   "dependencies": {
     "@lumyx/ui": "github:lumyx-dev/ui",
