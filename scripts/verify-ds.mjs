@@ -45,11 +45,19 @@ for (const f of files) {
     });
 }
 
-// 2. Zéro monospace — un vrai font-family/classe, pas une mention en prose ("no monospace tier").
+// 2. Monospace par token uniquement (aligne sur @lumyx/ui 0.4). `sl-num`, `font-mono` et
+// `var(--font-mono)` resolvent sur Geist Mono declare par le design system ; une pile litterale
+// le contourne et reste interdite.
+const LITERAL_MONO = /ui-monospace|'SF Mono'|"SF Mono"|\bMenlo\b|\bConsolas\b|\bmonospace\b/i;
+const MONO_TOKEN = /\bfont-mono\b|var\(--font-mono\)/g;
 for (const f of files) {
-  if (/\bfont-mono\b|ui-monospace|'SF Mono'|Menlo|Consolas/i.test(readFileSync(f, 'utf8'))) {
-    fail('no-monospace', `${rel(f)} contient une font monospace`);
-  }
+  readFileSync(f, 'utf8')
+    .split('\n')
+    .forEach((line, i) => {
+      if (LITERAL_MONO.test(line.replace(MONO_TOKEN, ''))) {
+        fail('no-literal-monospace', `${rel(f)}:${i + 1} — ${line.trim()}`);
+      }
+    });
 }
 
 // 3. Pas de dangerouslySetInnerHTML
@@ -66,6 +74,41 @@ for (const f of files) {
     fail('no-css-modules', rel(f));
   }
 }
+
+// 5-7. Les namespaces par defaut de Tailwind restent actifs : rien n'empeche a la compilation un
+// `text-sm`, un `bg-white` ou un `duration-700`. Memes regles que @lumyx/ui (scripts/verify-ds.mjs).
+const CODE_FILES = files.filter((f) => ['.ts', '.tsx', '.js'].includes(extname(f)));
+function scanClasses(rule, pattern, accept = () => false) {
+  for (const f of CODE_FILES) {
+    readFileSync(f, 'utf8')
+      .split('\n')
+      .forEach((line, i) => {
+        for (const m of line.matchAll(pattern)) {
+          if (!accept(m)) fail(rule, `${rel(f)}:${i + 1} — ${m[0]}`);
+        }
+      });
+  }
+}
+
+// 5. Taille de texte sur l'echelle numerique (text-11 … text-44), jamais l'echelle Tailwind.
+scanClasses('type-scale', /(?<![\w-])text-(?:xs|sm|base|lg|xl|[2-9]xl)(?![\w-])/g);
+const SCALE = new Set(['11', '12', '13', '14', '16', '20', '24', '26', '30', '34', '36', '44']);
+scanClasses('type-scale', /(?<![\w-])text-(\d+)(?![\w-])/g, (m) => SCALE.has(m[1]));
+
+// 6. Couleur par token semantique : ni black/white, ni la palette par defaut de Tailwind.
+const PALETTE =
+  'slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose';
+const COLOR_UTILS =
+  'bg|text|border(?:-[trblxyse])?|ring|ring-offset|outline|fill|stroke|from|via|to|divide|placeholder|caret|accent|decoration|shadow';
+scanClasses(
+  'no-raw-palette',
+  new RegExp(`(?<![\\w-])(?:${COLOR_UTILS})-(?:black|white|(?:${PALETTE})-\\d{2,3})(?![\\w-])`, 'g'),
+);
+
+// 7. Durees de motion du design system : 120 / 180 / 260 micro-teintes et tailles,
+// 300 lignes · 400 controles · 500 lift de carte · 600 entree d'ecran.
+const DURATIONS = new Set(['0', '120', '180', '260', '300', '400', '500', '600']);
+scanClasses('motion-duration', /(?<![\w-])duration-(\d+|\[[^\]]*\])/g, (m) => DURATIONS.has(m[1]));
 
 if (failures.length) {
   console.error(`\n✗ ${failures.length} violation(s) des contraintes du design system\n`);
